@@ -43,6 +43,7 @@ criterion_main!(benches);
 trait RouteParser<'path, A>: Sized {
     fn parse(&self, path: &'path str) -> Option<(A, &'path str)>;
 
+    #[inline(always)]
     fn combine_with<B, C, RouteParserB, FnABC>(
         self,
         that: RouteParserB,
@@ -60,6 +61,7 @@ trait RouteParser<'path, A>: Sized {
         }
     }
 
+    #[inline(always)]
     fn map<B, FnAB>(self, f: FnAB) -> Map<'path, A, B, Self, FnAB>
     where
         FnAB: Fn(A) -> B,
@@ -71,6 +73,7 @@ trait RouteParser<'path, A>: Sized {
         }
     }
 
+    #[inline(always)]
     fn zip<B, RouteParserB>(
         self,
         that: RouteParserB,
@@ -81,6 +84,7 @@ trait RouteParser<'path, A>: Sized {
         self.combine_with(that, |a, b| (a, b))
     }
 
+    #[inline(always)]
     fn zip_left<B, RouteParserB>(
         self,
         that: RouteParserB,
@@ -91,6 +95,7 @@ trait RouteParser<'path, A>: Sized {
         self.combine_with(that, |a, _| a)
     }
 
+    #[inline(always)]
     fn zip_right<B, RouteParserB>(
         self,
         that: RouteParserB,
@@ -104,6 +109,7 @@ trait RouteParser<'path, A>: Sized {
 
 struct Literal(String);
 impl<'path> RouteParser<'path, ()> for Literal {
+    #[inline(always)]
     fn parse(&self, path: &'path str) -> Option<((), &'path str)> {
         if path.starts_with(&self.0) {
             Some(((), &path[self.0.len()..]))
@@ -115,6 +121,7 @@ impl<'path> RouteParser<'path, ()> for Literal {
 
 struct Slash;
 impl<'path> RouteParser<'path, ()> for Slash {
+    #[inline(always)]
     fn parse(&self, path: &'path str) -> Option<((), &'path str)> {
         if path.starts_with('/') {
             Some(((), &path[1..]))
@@ -126,6 +133,7 @@ impl<'path> RouteParser<'path, ()> for Slash {
 
 struct StringVar;
 impl<'path> RouteParser<'path, &'path str> for StringVar {
+    #[inline(always)]
     fn parse(&self, path: &'path str) -> Option<(&'path str, &'path str)> {
         let idx = path.find('/');
         match idx {
@@ -137,6 +145,7 @@ impl<'path> RouteParser<'path, &'path str> for StringVar {
 
 struct IntVar;
 impl<'path> RouteParser<'path, i32> for IntVar {
+    #[inline(always)]
     fn parse(&self, path: &'path str) -> Option<(i32, &'path str)> {
         let idx = path.find('/');
         match idx {
@@ -165,6 +174,7 @@ where
     RouteParserA: RouteParser<'path, A>,
     FnAB: Fn(A) -> B,
 {
+    #[inline(always)]
     fn parse(&self, path: &'path str) -> Option<(B, &'path str)> {
         self.parser.parse(path).map(|(a, rest)| ((self.f)(a), rest))
     }
@@ -189,6 +199,7 @@ where
     RouteParserB: RouteParser<'path, B>,
     FnABC: Fn(A, B) -> C,
 {
+    #[inline(always)]
     fn parse(&self, path: &'path str) -> Option<(C, &'path str)> {
         self.left.parse(path).and_then(|(a, path)| {
             self.right
