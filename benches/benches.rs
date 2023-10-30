@@ -81,22 +81,22 @@ trait RouteParser<'path, A>: Sized {
         self.combine_with(that, |a, b| (a, b))
     }
 
-    fn zip_left<B, RoutePaserB>(
+    fn zip_left<B, RouteParserB>(
         self,
-        that: RoutePaserB,
-    ) -> Combine<'path, A, B, A, Self, RoutePaserB, fn(A, B) -> A>
+        that: RouteParserB,
+    ) -> Combine<'path, A, B, A, Self, RouteParserB, fn(A, B) -> A>
     where
-        RoutePaserB: RouteParser<'path, B>,
+        RouteParserB: RouteParser<'path, B>,
     {
         self.combine_with(that, |a, _| a)
     }
 
-    fn zip_right<B, RoutePaserB>(
+    fn zip_right<B, RouteParserB>(
         self,
-        that: RoutePaserB,
-    ) -> Combine<'path, A, B, B, Self, RoutePaserB, fn(A, B) -> B>
+        that: RouteParserB,
+    ) -> Combine<'path, A, B, B, Self, RouteParserB, fn(A, B) -> B>
     where
-        RoutePaserB: RouteParser<'path, B>,
+        RouteParserB: RouteParser<'path, B>,
     {
         self.combine_with(that, |_, b| b)
     }
