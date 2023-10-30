@@ -1,3 +1,5 @@
+#![feature(return_position_impl_trait_in_trait)]
+
 use std::marker::PhantomData;
 
 use criterion::*;
@@ -77,7 +79,7 @@ trait RouteParser<'path, A>: Sized {
     fn zip<B, RouteParserB>(
         self,
         that: RouteParserB,
-    ) -> Combine<'path, A, B, (A, B), Self, RouteParserB, fn(A, B) -> (A, B)>
+    ) -> Combine<'path, A, B, (A, B), Self, RouteParserB, impl Fn(A, B) -> (A, B)>
     where
         RouteParserB: RouteParser<'path, B>,
     {
@@ -88,7 +90,7 @@ trait RouteParser<'path, A>: Sized {
     fn zip_left<B, RouteParserB>(
         self,
         that: RouteParserB,
-    ) -> Combine<'path, A, B, A, Self, RouteParserB, fn(A, B) -> A>
+    ) -> Combine<'path, A, B, A, Self, RouteParserB, impl Fn(A, B) -> A>
     where
         RouteParserB: RouteParser<'path, B>,
     {
@@ -99,7 +101,7 @@ trait RouteParser<'path, A>: Sized {
     fn zip_right<B, RouteParserB>(
         self,
         that: RouteParserB,
-    ) -> Combine<'path, A, B, B, Self, RouteParserB, fn(A, B) -> B>
+    ) -> Combine<'path, A, B, B, Self, RouteParserB, impl Fn(A, B) -> B>
     where
         RouteParserB: RouteParser<'path, B>,
     {
